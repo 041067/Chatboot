@@ -117,7 +117,7 @@ const ChatPage: React.FC = () => {
         </div>
         <h1 className="chat-title">ChatBot Técnico em Desenvolvimento de Sistemas</h1>
         <p className="chat-subtitle">
-          Respondo perguntas sobre o curso técnico em desenvolvimento de sistemas do SENAI Jaú<br>
+          Respondo perguntas sobre o curso técnico em desenvolvimento de sistemas do SENAI Jaú<br />
           Baseado no plano do curso oficial
         </p>
       </header>
