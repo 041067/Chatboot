@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🤖 Senai Jaú - ChatBot Técnico em Desenvolvimento de Sistemas</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='25' y='15' width='50' height='45' rx='10' fill='%23ff0000'/%3E%3Crect x='15' y='45' width='70' height='30' rx='8' fill='%23cc0000'/%3E%3Ccircle cx='38' cy='35' r='5' fill='white'/%3E%3Ccircle cx='62' cy='35' r='5' fill='white'/%3E%3Crect x='43' y='48' width='14' height='6' rx='2' fill='white'/%3E%3Crect x='35' y='65' width='30' height='4' rx='2' fill='%23999'/%3E%3Crect x='22' y='75' width='10' height='18' rx='3' fill='%23ff0000'/%3E%3Crect x='68' y='75' width='10' height='18' rx='3' fill='%23ff0000'/%3E%3Crect x='45' y='75' width='10' height='12' rx='3' fill='%23ff0000'/%3E%3Crect x='10' y='30' width='10' height='10' rx='5' fill='%23ff0000'/%3E%3Crect x='80' y='30' width='10' height='10' rx='5' fill='%23ff0000'/%3E%3C/svg%3E">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-image: url("/img/PapelParede.avif");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 0;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .header {
+        text-align: center;
+        max-width: 800px;
+      }
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .logo {
+        background: white;
+        border-radius: 15px;
+        padding: 20px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 3px solid #ff0000;
+      }
+
+      .logo-text {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #ff0000;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        margin-top: 15px;
+        opacity: 0.9;
+        line-height: 1.6;
+        text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.9);
+      }
+
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 8px 16px;
+        border-radius: 20px;
+        margin-top: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        background: #00ff00;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.5;
+          transform: scale(1.1);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .status-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .chat-interface {
+        width: 100%;
+        max-width: 800px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        border: 3px solid white;
+      }
+
+      .chat-header {
+        text-align: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #ff0000;
+      }
+
+      .chat-title {
+        font-size: 1.8rem;
+        color: #ff0000;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      .chat-subtitle {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      .chat-container {
+        min-height: 400px;
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 20px;
+        background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+        border-radius: 15px;
+        margin-bottom: 20px;
+        border: 1px solid #e0e0e0;
+      }
+
+      .message {
+        margin-bottom: 20px;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .message.user {
+        text-align: right;
+      }
+
+      .message.bot {
+        text-align: left;
+      }
+
+      .message.user-message,
+      .message.userMessage {
+        text-align: right;
+      }
+
+      .message.bot-message,
+      .message.botMessage {
+        text-align: left;
+      }
+
+      .message-content {
+        display: inline-block;
+        max-width: 80%;
+        padding: 12px 18px;
+        border-radius: 18px;
+        word-wrap: break-word;
+        line-height: 1.5;
+        color: #000;
+      }
+
+      .user-message .message-content,
+      .userMessage .message-content {
+        background: linear-gradient(135deg, #ff0000, #cc0000);
+        color: white;
+        border-bottom-right-radius: 5px;
+      }
+
+      .bot-message .message-content,
+      .botMessage .message-content {
+        background: white;
+        color: #000 !important;
+        border: 2px solid #ff0000;
+        border-bottom-left-radius: 5px;
+      }
+
+      .input-area {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .input-field {
+        flex: 1;
+        padding: 15px 20px;
+        border: 3px solid #ff0000;
+        border-radius: 25px;
+        font-size: 1rem;
+        outline: none;
+        background: white;
+        color: #333;
+        transition: all 0.3s ease;
+      }
+
+      .input-field:focus {
+        box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .input-field:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .send-button {
+        padding: 15px 25px;
+        background: #ff0000;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 5px 15px rgba(255, 0, 0, 0.4);
+      }
+
+      .send-button:hover:not(:disabled) {
+        background: #cc0000;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(255, 0, 0, 0.5);
+      }
+
+      .send-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .voice-button {
+        padding: 15px;
+        background: white;
+        color: #ff0000;
+        border: 3px solid #ff0000;
+        border-radius: 50%;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 55px;
+        height: 55px;
+      }
+
+      .voice-button:hover:not(.active) {
+        background: #ff0000;
+        color: white;
+        transform: scale(1.05);
+      }
+
+      .voice-button.active {
+        background: #ff0000;
+        color: white;
+        animation: recording 1.5s infinite;
+      }
+
+      @keyframes recording {
+        0% {
+          box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+        }
+      }
+
+      .typing-indicator {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 15px;
+        color: #666;
+        font-style: italic;
+      }
+
+      .typing-dot {
+        width: 8px;
+        height: 8px;
+        background: #ff0000;
+        border-radius: 50%;
+        animation: typing 1.5s infinite;
+      }
+
+      .typing-dot:nth-child(2) {
+        animation-delay: 0.3s;
+      }
+
+      .typing-dot:nth-child(3) {
+        animation-delay: 0.6s;
+      }
+
+      @keyframes typing {
+        0% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      .suggested-questions {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        border: 1px solid #ff0000;
+      }
+
+      .suggested-title {
+        color: #ff0000;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .suggested-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+      }
+
+      .suggested-item {
+        background: #ffeeee;
+        color: #cc0000;
+        padding: 8px 15px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid #ff0000;
+        white-space: nowrap;
+      }
+
+      .suggested-item:hover {
+        background: #ff0000;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        .logo-text {
+          font-size: 2rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+
+        .chat-interface {
+          padding: 20px;
+        }
+
+        .input-area {
+          flex-direction: column;
+        }
+
+        .voice-button {
+          width: 50px;
+          height: 50px;
+          font-size: 1rem;
+        }
+      }
+
+      .welcome-message {
+        text-align: center;
+        padding: 40px 20px;
+        background: linear-gradient(to bottom, #fff0f0, #ffe6e6);
+        border-radius: 15px;
+        border: 2px dashed #ffcccc;
+      }
+
+      .welcome-message h2 {
+        color: #cc0000;
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+      }
+
+      .welcome-message p {
+        color: #666;
+        margin-bottom: 10px;
+        line-height: 1.6;
+      }
+
+      .message-content br {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .message-content ul,
+      .message-content ol {
+        margin: 10px 0;
+        padding-left: 20px;
+      }
+
+      .message-content li {
+        margin: 5px 0;
+      }
+
+      .error-message {
+        background: #ffeeee;
+        border-color: #ff6666;
+        color: #cc0000;
+      }
+
+      .bot-image {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .bot-image {
+          max-width: 100%;
+          border-radius: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="logo-container">
+          <div class="logo">
+            <span class="logo-text">🤖 Senai Jaú 7.90</span>
+          </div>
+        </div>
+        <h1 class="subtitle">ChatBot Técnico em Desenvolvimento de Sistemas</h1>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span class="status-text">Online e Pronto para Ajudar</span>
+        </div>
+      </header>
+
+      <main class="chat-interface">
+        <div class="chat-header">
+          <h2 class="chat-title">Assistente Especializado</h2>
+          <p class="chat-subtitle">
+            Respondo perguntas sobre o curso técnico em desenvolvimento de
+            sistemas do SENAI Jaú<br />
+            Baseado no plano do curso oficial
+          </p>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+          <div class="message bot-message">
+            <div class="message-content">
+              Olá! Sou o ChatBot do SENAI Jaú, especialista no curso Técnico em
+              Desenvolvimento de Sistemas.<br />
+              Estou aqui para ajudar você com informações sobre as disciplinas,
+              mercado de trabalho,<br />
+              possibilidades de carreira, ou qualquer outra dúvida sobre o
+              curso.<br /><br />
+              Faça sua pergunta sobre o curso! Por exemplo:<br />
+              • Qual o objetivo do curso?<br />
+              • Quais disciplinas são estudadas?<br />
+              • Quanto tempo dura o curso?<br />
+              • Como é o mercado de trabalho?<br />
+              • Quais os requisitos para ingressar?
+            </div>
+          </div>
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <span>O assistente está pensando...</span>
+        </div>
+
+        <div class="suggested-questions">
+          <div class="suggested-title">💡 Perguntas Populares</div>
+          <div class="suggested-list">
+            <div
+              class="suggested-item"
+              onclick="askQuestion('Qual o objetivo do curso técnico?')"
+            >
+              Qual o objetivo do curso técnico?
+            </div>
+            <div
+              class="suggested-item"
+              onclick="askQuestion('Quais as principais disciplinas?')"
+            >
+              Quais as principais disciplinas?
+            </div>
+            <div
+              class="suggested-item"
+              onclick="askQuestion('Quanto tempo dura o curso?')"
+            >
+              Quanto tempo dura o curso?
+            </div>
+            <div
+              class="suggested-item"
+              onclick="askQuestion('Como é o mercado de trabalho?')"
+            >
+              Como é o mercado de trabalho?
+            </div>
+            <div
+              class="suggested-item"
+              onclick="askQuestion('Quais os requisitos para ingressar?')"
+            >
+              Quais os requisitos para ingressar?
+            </div>
+          </div>
+        </div>
+
+        <div class="input-area">
+          <input
+            type="text"
+            class="input-field"
+            id="messageInput"
+            placeholder="Digite sua pergunta sobre o curso técnico..."
+            onkeypress="if (event.key === 'Enter') sendMessage();"
+          />
+          <button class="send-button" id="sendButton" onclick="sendMessage()">
+            <span>Enviar</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l11 2-11 2z" />
+            </svg>
+          </button>
+          <button
+            class="voice-button"
+            id="voiceButton"
+            onclick="toggleVoiceRecognition()"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"
+              />
+              <path
+                d="M17 11c0 3.31-2.69 6-6 6s-6-2.69-6-6H5c0 4.42 3.58 8 8 8s8-3.58 8-8h-2z"
+              />
+            </svg>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      let chatContainer = document.getElementById("chatContainer");
+      let messageInput = document.getElementById("messageInput");
+      let sendButton = document.getElementById("sendButton");
+      let voiceButton = document.getElementById("voiceButton");
+      let typingIndicator = document.getElementById("typingIndicator");
+      let recognition = null;
+      let isRecording = false;
+      let botResponseCount = 0;
+
+      function getApiChatUrl() {
+        const localHosts = ["localhost", "127.0.0.1", ""];
+        if (
+          localHosts.includes(window.location.hostname) &&
+          window.location.port !== "8000"
+        ) {
+          return "http://localhost:8000/api/chat";
+        }
+        return "/api/chat";
+      }
+
+      function scrollToBottom() {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      function addMessage(content, isUser = false, isError = false, imageIndex = null) {
+        const messageDiv = document.createElement("div");
+        const messageClass = isUser ? "user" : "bot";
+        messageDiv.className = `message ${messageClass}-message`;
+
+        let contentClass = "";
+        if (isError) {
+          contentClass = "error-message";
+        }
+
+        let imageHtml = "";
+        if (!isUser && imageIndex !== null) {
+          const imgSrc = imageIndex === 0 ? "/img/Sala1.png" : "/img/Sala2.png";
+          imageHtml = `<img src="${imgSrc}" alt="Sala ${imageIndex + 1}" class="bot-image">`;
+        }
+
+        messageDiv.innerHTML = `
+                <div class="message-content ${contentClass}">${content}</div>
+                ${imageHtml}
+            `;
+        chatContainer.appendChild(messageDiv);
+        scrollToBottom();
+      }
+
+      async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        messageInput.value = "";
+        sendButton.disabled = true;
+        typingIndicator.style.display = "flex";
+
+        try {
+          const response = await fetch(getApiChatUrl(), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: message,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Erro ao enviar mensagem");
+          }
+
+          const data = await response.json();
+          addMessage(data.response, false, false, botResponseCount % 2);
+          botResponseCount++;
+        } catch (error) {
+          addMessage(
+            "Desculpe, ocorreu um erro. Por favor, tente novamente.",
+            false,
+            true,
+            botResponseCount % 2,
+          );
+          botResponseCount++;
+        } finally {
+          typingIndicator.style.display = "none";
+          sendButton.disabled = false;
+          messageInput.focus();
+        }
+      }
+
+      function askQuestion(question) {
+        messageInput.value = question;
+        sendMessage();
+      }
+
+      function toggleVoiceRecognition() {
+        if (!isRecording) {
+          startVoiceRecognition();
+        } else {
+          stopVoiceRecognition();
+        }
+      }
+
+      function finishVoiceRecognition() {
+        isRecording = false;
+        voiceButton.classList.remove("active");
+      }
+
+      function getVoiceErrorMessage(errorCode) {
+        const messages = {
+          "not-allowed":
+            "Nao consegui acessar o microfone. Libere a permissao de microfone no navegador e tente novamente.",
+          "service-not-allowed":
+            "O servico de reconhecimento de voz foi bloqueado pelo navegador. Tente no Google Chrome ou Microsoft Edge.",
+          "audio-capture":
+            "Nao encontrei um microfone disponivel neste dispositivo.",
+          "no-speech":
+            "Nao consegui detectar fala. Tente novamente falando mais perto do microfone.",
+          network:
+            "O reconhecimento de voz precisa de conexao com a internet para funcionar neste navegador.",
+          aborted: "Gravacao de voz cancelada.",
+        };
+        return (
+          messages[errorCode] ||
+          "Desculpe, ocorreu um erro no reconhecimento de voz."
+        );
+      }
+
+      async function startVoiceRecognition() {
+        const localHosts = ["localhost", "127.0.0.1", ""];
+        if (
+          !window.isSecureContext &&
+          !localHosts.includes(window.location.hostname)
+        ) {
+          addMessage(
+            "O reconhecimento de voz precisa ser usado em HTTPS ou em localhost.",
+            false,
+            true,
+          );
+          return;
+        }
+
+        if (
+          !("webkitSpeechRecognition" in window) &&
+          !("SpeechRecognition" in window)
+        ) {
+          addMessage(
+            "Desculpe, seu navegador nao suporta reconhecimento de voz. Tente usar Google Chrome ou Microsoft Edge.",
+            false,
+            true,
+          );
+          return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          addMessage(
+            "Nao consegui acessar o microfone neste navegador.",
+            false,
+            true,
+          );
+          return;
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+          });
+          stream.getTracks().forEach((track) => track.stop());
+        } catch (error) {
+          addMessage(
+            "Nao consegui acessar o microfone. Verifique se a permissao foi liberada no navegador.",
+            false,
+            true,
+          );
+          return;
+        }
+
+        const SpeechRecognition =
+          window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = "pt-BR";
+
+        recognition.onstart = () => {
+          isRecording = true;
+          voiceButton.classList.add("active");
+          addMessage("Gravando...", false);
+        };
+
+        recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          messageInput.value = transcript;
+          finishVoiceRecognition();
+          sendMessage();
+        };
+
+        recognition.onerror = (event) => {
+          addMessage(getVoiceErrorMessage(event.error), false, true);
+          finishVoiceRecognition();
+          recognition = null;
+        };
+
+        recognition.onend = () => {
+          finishVoiceRecognition();
+        };
+
+        try {
+          recognition.start();
+        } catch (error) {
+          addMessage(
+            "Nao foi possivel iniciar a gravacao de voz. Tente novamente.",
+            false,
+            true,
+          );
+          finishVoiceRecognition();
+          recognition = null;
+        }
+      }
+
+      function stopVoiceRecognition() {
+        if (recognition && isRecording) {
+          try {
+            recognition.stop();
+          } catch (error) {
+            // O navegador pode encerrar o reconhecimento antes do clique de parar.
+          }
+        }
+        finishVoiceRecognition();
+      }
+
+      messageInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      window.addEventListener("load", () => {
+        messageInput.focus();
+        setTimeout(() => {
+          addMessage(
+            "Olá! Estou pronto para ajudar. Faça sua primeira pergunta!",
+            false,
+          );
+        }, 1000);
+      });
+    </script>
+  </body>
+</html>
